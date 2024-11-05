@@ -7,6 +7,10 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
+app.get("/api/v1/users", (c) => {
+  return c.json({ message: "Hello Hono!" });
+});
+
 app.get("/seceret", (c) => {
   return c.text("Hello seceret!");
 });
