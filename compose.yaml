@@ -1,0 +1,8 @@
+services:
+  agave-app:
+    image: agave:production
+    container_name: agave
+    ports:
+      - 3000:3000
+    environment:
+      - ENV_VAR=value
