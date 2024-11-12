@@ -11,7 +11,7 @@ app.get("/api/v1/users", (c) => {
   return c.json({ message: "Hello Hono!" });
 });
 
-app.get("/seceret", (c) => {
+app.get("/secret", (c) => {
   const secretValue = process.env.SV || "no secret";
 
   return c.text(`Hello v2 ${secretValue}!`);
