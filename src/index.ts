@@ -4,7 +4,7 @@ import { Hono } from "hono";
 const app = new Hono();
 
 app.get("/", (c) => {
-  return c.text("Hello Hono v2!");
+  return c.text("Hello Hono!");
 });
 
 app.get("/api/v1/users", (c) => {
@@ -14,7 +14,7 @@ app.get("/api/v1/users", (c) => {
 app.get("/secret", (c) => {
   const secretValue = process.env.SV || "no secret";
 
-  return c.text(`Hello v2 ${secretValue}!`);
+  return c.text(`Hello ${secretValue}!`);
 });
 
 app.get("/:name", (c) => {
