@@ -1,70 +1,46 @@
-name: Build and deploy
-
+name: Deploy
 concurrency:
   group: production
   cancel-in-progress: true
-
 on:
   push:
     branches:
       - main
-
 jobs:
-  Deploy:
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+  deploy:
     runs-on: ubuntu-latest
-
     env:
       DOCKER_BUILDKIT: 1
       RAILS_ENV: production
+      KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
+      KAMAL_REGISTRY_USERNAME: ${{ secrets.KAMAL_REGISTRY_USERNAME }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.1
+          bundler-cache: true
+
+      - run: gem install kamal
+
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.KAMAL_REGISTRY_USER }}
+          username: ${{ secrets.KAMAL_REGISTRY_USERNAME }}
           password: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
 
-      - name: Set Tag
-        id: tag
-        run: |
-          echo "tag=$(git rev-parse "$GITHUB_SHA")" >> $GITHUB_OUTPUT
+      - name: Set up Docker Buildx for cache
+        uses: docker/setup-buildx-action@v3
 
-      - name: Build image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          labels: |
-            "service=telebugs"
-          tags: |
-            "${{ secrets.KAMAL_REGISTRY_USER }}/agave:latest"
-            "${{ secrets.KAMAL_REGISTRY_USER }}/agave:${{ steps.tag.outputs.tag }}"
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - run: kamal version
+      - run: kamal registry login --verbose
 
-      - uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-          ruby-version: 3.2.3
-
-      - name: Install kamal
-        run: gem install kamal
-
-      - name: Deploy
-        run: kamal deploy --skip-push
-        env:
-          KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
+      # Suggestion to use lock release and redeploy after reading comments from others. Deploying two builds could cause locking issues when the first is cancelled.
+      - run: kamal lock release --verbose
+      - run: kamal redeploy --verbose
