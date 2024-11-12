@@ -34,6 +34,7 @@ jobs:
       - name: Setup kamal secrets file
         run: |
           mkdir -p .kamal
+          touch .kamal/secrets
           echo "${{ secrets.KAMAL_REGISTRY_PASSWORD }}" > .kamal/secrets
           echo "${{ secrets.SV }}" > .kamal/secrets
           chmod 600 .kamal/secrets
