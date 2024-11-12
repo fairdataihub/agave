@@ -31,12 +31,12 @@ jobs:
       #       submodules: true
       #       lfs: false
 
-      #   - name: Setup kamal secrets file
-      #     run: |
-      #       mkdir -p .kamal
-      #       echo "${{ secrets.KAMAL_REGISTRY_PASSWORD }}" > .kamal/secrets
-      #       echo "${{ secrets.SV }}" > .kamal/secrets
-      #       chmod 600 .kamal/secrets
+      - name: Setup kamal secrets file
+        run: |
+          mkdir -p .kamal
+          echo "${{ secrets.KAMAL_REGISTRY_PASSWORD }}" > .kamal/secrets
+          echo "${{ secrets.SV }}" > .kamal/secrets
+          chmod 600 .kamal/secrets
 
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
