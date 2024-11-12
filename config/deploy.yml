@@ -8,7 +8,7 @@ image: megasanjay/agave
 servers:
   web:
     hosts: 
-      - 52.146.20.207
+      - KAMAL_SERVER_IP
   # job:
   #   hosts:
   #     - 192.168.0.1
