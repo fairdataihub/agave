@@ -37,16 +37,15 @@ jobs:
           ruby-version: 3.3.0
           bundler-cache: true
 
+      - run: gem install kamal
+
       - name: Setup kamal secrets file
         run: |
-          rm -r .kamal/secrets
           mkdir -p .kamal
           touch .kamal/secrets
           echo "${{ secrets.KAMAL_REGISTRY_PASSWORD }}" > .kamal/secrets
           echo "${{ secrets.SV }}" > .kamal/secrets
           chmod 600 .kamal/secrets
-
-      - run: gem install kamal
 
       - uses: webfactory/ssh-agent@v0.9.0
         with:
