@@ -8,7 +8,7 @@ image: megasanjay/agave
 servers:
   web:
     hosts: 
-      - KAMAL_SERVER_IP
+      - <%= ENV["KAMAL_SERVER_IP"] %>
   # job:
   #   hosts:
   #     - 192.168.0.1
